@@ -1,15 +1,35 @@
 def get_rows_by_number(table, start, stop = None, copy_table = False):
     """
     Возвращает строки таблицы по номеру (одна строка или интервал).
+
+    Args:
+        table (dict): Словарь, представляющий таблицу. В нём должны быть ключи.
+        start (int): Индекс, с которого начинается выборка строк.
+        stop (int, optional): Индекс, до которого продолжается выборка строк (не включая stop). 
+                              Если stop не указан (None), выборка идёт до конца списка строк.
+        copy_table (bool, optional): Флаг, который определяет, нужно ли копировать строки таблицы перед возвратом.
+
+    Returns:
+        dict: Словарь с двумя ключами.
     """
-    rows = table['rows'][start:stop]
+    rows = table['rows'][start:stop] # выполняет срез строк таблицы
+    # создание словаря с теми же заголовками таблицы и строками из среза.
     return {"header": table['header'], "rows": rows.copy()} if copy_table else {"header": table['header'], "rows": rows}
 
 def get_rows_by_index(table, *values, copy_table=False):
     """
     Возвращает строки таблицы, где значения в первом столбце совпадают с переданными аргументами.
+
+    Args:
+        table (dict): Таблица с ключами.
+        *values: Несколько значений, с которыми будут сравниваться значения в первом столбце таблицы. Это может быть одно или несколько значений.
+        copy_table (bool, optional): Если True, возвращается копия строк таблицы. Если False, возвращаются строки по ссылке.
+
+    Returns:
+        dict: Словарь с двумя ключами.
     """
-    filtered_rows = [row for row in table['rows'] if row[0] in values]
+    filtered_rows = [row for row in table['rows'] if row[0] in values] # сравниваем строки с переданными значениями.
+    # создание нового словаря с найдеными индексами.
     return {"header": table['header'], "rows": filtered_rows.copy()} if copy_table else {"header": table['header'], "rows": filtered_rows}
 
 def get_column_types(table, by_number=True):
@@ -42,34 +62,66 @@ def get_column_types(table, by_number=True):
 def set_column_types(table, types_dict, by_number=True):
     """
     Задаёт типы значений для столбцов.
+
+    Args:
+        table: Словарь, представляющий таблицу.
+        types_dict: Словарь, в котором ключи — это индексы или имена столбцов, а значения — это типы данных.
+        by_number (по умолчанию True): Если этот параметр равен True, то ключи в types_dict будут интерпретироваться как индексы столбцов. 
+                                       Если False, то ключи будут интерпретироваться как имена столбцов.
+
+    Returns:
+        None
+
+    Raises:
+         ValueError: Если невозможно преобразовать значение.
     """
-    for key, col_type in types_dict.items():
-        col_index = key if by_number else table['header'].index(key)
+    for key, col_type in types_dict.items(): # перебираем все ключи и значения
+        col_index = key if by_number else table['header'].index(key) # если by_number — True, то key используется как индекс столбца. Иначе как название столбца
         for row in table['rows']:
             try:
-                row[col_index] = col_type(row[col_index])
+                row[col_index] = col_type(row[col_index]) # ищем по индексу столбца значение в строке и преобразовываем его тип данных в тип данных из col_type.
             except ValueError:
                 raise ValueError(f"Невозможно преобразовать значение '{row[col_index]}' в {col_type.__name__}")
 
 def get_values(table, column=0):
     """
     Возвращает список значений из указанного столбца.
+
+    Args:
+        table: Это словарь, представляющий таблицу.
+        column: Это индекс столбца, из которого нужно извлечь значения. По умолчанию column = 0
+        
+    Returns:
+        list: список значений указанного столбца.
     """
-    col_index = column if isinstance(column, int) else table['header'].index(column)
-    return [row[col_index] for row in table['rows']]
+    col_index = column if isinstance(column, int) else table['header'].index(column) # если column - число, то это индекс. Иначе ищет индекс этого столбца в списке заголовков. 
+    return [row[col_index] for row in table['rows']] # для каждой строки извлекается значение из столбца с индексом.
 
 def get_value(table, column=0):
     """
     Возвращает одно значение из столбца для таблицы с одной строкой.
+    
+    Args:
+        table (dict): Таблица с ключами 'header' и 'rows'.
+        column (int or str): Индекс или имя столбца, из которого нужно получить значение (по умолчанию 0).
+
+    Returns:
+        значение из таблицы (тип зависит от типа данных в указанном столбце).
     """
-    if len(table['rows']) != 1:
+    if len(table['rows']) != 1: # проверка, что таблица содержит только одну строку.
         raise ValueError("Функция get_value() применима только для таблицы с одной строкой.")
-    col_index = column if isinstance(column, int) else table['header'].index(column)
-    return table['rows'][0][col_index]
+    col_index = column if isinstance(column, int) else table['header'].index(column) # так же как в get_values
+    return table['rows'][0][col_index] # извлекает значение из первой строки таблицы по индексу столбца col_index
 
 def set_values(table, values, column=0):
     """
     Устанавливает список значений в указанный столбец.
+    
+    Args:
+
+
+    Returns:
+        
     """
     col_index = column if isinstance(column, int) else table['header'].index(column)
     if len(values) != len(table['rows']):
@@ -80,6 +132,12 @@ def set_values(table, values, column=0):
 def set_value(table, value, column=0):
     """
     Устанавливает одно значение в столбец для таблицы с одной строкой.
+    
+    Args:
+
+
+    Returns:
+        
     """
     if len(table['rows']) != 1:
         raise ValueError("Функция set_value() применима только для таблицы с одной строкой.")
@@ -89,6 +147,12 @@ def set_value(table, value, column=0):
 def print_table(table):
     """
     Печатает таблицу в консоль.
+    
+    Args:
+
+
+    Returns:
+        
     """
     print("\t".join(table['header']))
     for row in table['rows']:
@@ -97,6 +161,12 @@ def print_table(table):
 def concat(table1, table2):
     """
     Склеивает две таблицы по строкам, если у них совпадают заголовки.
+    
+    Args:
+
+
+    Returns:
+        
     """
     if table1['header'] != table2['header']:
         raise ValueError("Таблицы имеют разные заголовки и не могут быть объединены.")
@@ -110,6 +180,12 @@ def concat(table1, table2):
 def split(table, row_number):
     """
     Разбивает таблицу на две по номеру строки.
+    
+    Args:
+
+
+    Returns:
+        
     """
     if row_number < 0 or row_number > len(table['rows']):
         raise IndexError("Номер строки выходит за пределы таблицы.")
