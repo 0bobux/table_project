@@ -15,19 +15,28 @@ def get_rows_by_index(table, *values, copy_table=False):
 def get_column_types(table, by_number=True):
     """
     Возвращает словарь с типами значений для каждого столбца.
+    Определяет типы данных по требованию для уже загруженной таблицы.
+
+    Args:
+        table (dict): Таблица с ключами 'header' и 'rows'.
+        by_number (bool): Если True, ключами будут индексы столбцов.
+                          Если False, ключами будут названия столбцов.
+
+    Returns:
+        dict: Словарь с типами данных для каждого столбца.
     """
     column_types = {}
     for i, col in enumerate(table['header']):
-        values = [row[i] for row in table['rows'] if row[i] != ""]
-        if all(v.isdigit() for v in values):
+        values = [row[i] for row in table['rows'] if row[i] != ""]  # cчитываем все значения столбца
+        if all(v.isdigit() for v in values): # если все значения цифры
             column_type = int
-        elif all(is_float(v) for v in values):
+        elif all(is_float(v) for v in values): # если все значения можно преобразовать в float
             column_type = float
-        elif all(v.lower() in ("true", "false") for v in values):
+        elif all(v.lower() in ("true", "false") for v in values): # если все значения True/False
             column_type = bool
-        else:
+        else: # в остальных случаях это строка
             column_type = str
-        column_types[i if by_number else col] = column_type
+        column_types[i if by_number else col] = column_type # здесь выбирается, что будет ключом: индекс столбца или его название
     return column_types
 
 def set_column_types(table, types_dict, by_number=True):
@@ -118,6 +127,7 @@ def split(table, row_number):
 def auto_detect_column_types(table):
     """
     Автоматически определяет типы столбцов на основе их значений.
+    Определяет типы данных при загрузке таблицы из файла.
 
     Args:
         table (dict): Таблица с ключами 'header' и 'rows'.
@@ -131,8 +141,8 @@ def auto_detect_column_types(table):
         column_values = [row[col_index] for row in table['rows']]
         try:
             # Попробуем все значения преобразовать в int
-            if all(isinstance(int(value), int) for value in column_values):
-                column_types[col_name] = int
+            if all(isinstance(int(value), int) for value in column_values): # if all() => True
+                column_types[col_name] = int # добавляем ключ со значением
                 continue
         except ValueError:
             pass
@@ -150,7 +160,7 @@ def auto_detect_column_types(table):
             if all(value.lower() in ("true", "false") for value in column_values):
                 column_types[col_name] = bool
                 continue
-        except AttributeError:
+        except AttributeError: # ловит ситуацию, если value не является строкой.
             pass
 
         # Если ничего не подошло, назначаем тип str
@@ -161,6 +171,12 @@ def auto_detect_column_types(table):
 def is_float(value):
     """
     Вспомогательная функция для проверки, является ли строка числом с плавающей точкой.
+
+    Args:
+        
+
+    Returns:
+        
     """
     try:
         float(value)
