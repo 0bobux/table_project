@@ -162,11 +162,11 @@ def print_table(table):
         table (dict): Таблица с ключами.
 
     Returns:
-        Отрисованную таблицу с табуляцией.
+        None
     """
     print("\t".join(table['header']))
     for row in table['rows']:
-        print("\t".join(map(str, row)))
+        print("\t".join(map(str, row))) # преобразует каждый элемент строки row в строку с помощью str. потому что join работает только со строками.
 
 def concat(table1, table2):
     """
