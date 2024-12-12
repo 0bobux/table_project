@@ -87,6 +87,16 @@ one_row_table = {"header": test_table["header"], "rows": [test_table["rows"][0]]
 salary = get_value(one_row_table, "Зарплата")
 print("Значение:", salary)
 
+# Обновляем значение в столбце 'Зарплата' для таблицы с одной строкой
+#print("\nОбновляем значение в столбце 'Зарплата' для таблицы с одной строкой:")
+#one_row_table = {"header": test_table["header"], "rows": [test_table["rows"][0]]}
+#print("До обновления:")
+#print_table(one_row_table)
+
+#set_value(one_row_table, 75000, "Зарплата")
+#print("После обновления:")
+#print_table(one_row_table)
+
 # Тест функции concat
 print("\n=== Тест concat ===")
 concat_table = concat(table1, table2)
