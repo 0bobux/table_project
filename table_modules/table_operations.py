@@ -118,41 +118,51 @@ def set_values(table, values, column=0):
     Устанавливает список значений в указанный столбец.
     
     Args:
-
+        table (dict): Таблица с ключами.
+        values (list): Список значений, которые нужно установить в столбец.
+        column (int or str): Индекс или имя столбца, в который нужно установить значения (по умолчанию 0).
 
     Returns:
-        
+        None
+
+    Raises:
+        ValueError: Количество значений не совпадает с количеством строк в таблице.
     """
-    col_index = column if isinstance(column, int) else table['header'].index(column)
-    if len(values) != len(table['rows']):
+    col_index = column if isinstance(column, int) else table['header'].index(column) # определение индекса столбца.
+    if len(values) != len(table['rows']): # проверка соответствия длины списка значений и количества строк.
         raise ValueError("Количество значений не совпадает с количеством строк в таблице.")
     for i, row in enumerate(table['rows']):
-        row[col_index] = values[i]
+        row[col_index] = values[i] # итерирует по всем строкам таблицы и присваивает значения из списка values.
 
 def set_value(table, value, column=0):
     """
     Устанавливает одно значение в столбец для таблицы с одной строкой.
     
     Args:
-
+        table (dict): Таблица с ключами.
+        value (int or str): Значение, которое нужно установить в таблицу.
+        column (int or str): Индекс или имя столбца, в который нужно установить значения (по умолчанию 0).
 
     Returns:
-        
+        None
+
+    Raises:
+        ValueError: Функция set_value() применима только для таблицы с одной строкой.
     """
-    if len(table['rows']) != 1:
+    if len(table['rows']) != 1: # проверка, что таблица содержит только одну строку.
         raise ValueError("Функция set_value() применима только для таблицы с одной строкой.")
-    col_index = column if isinstance(column, int) else table['header'].index(column)
-    table['rows'][0][col_index] = value
+    col_index = column if isinstance(column, int) else table['header'].index(column) # определение индекса столбца.
+    table['rows'][0][col_index] = value # замена значения в строке на переданное значение.
 
 def print_table(table):
     """
     Печатает таблицу в консоль.
     
     Args:
-
+        table (dict): Таблица с ключами.
 
     Returns:
-        
+        Отрисованную таблицу с табуляцией.
     """
     print("\t".join(table['header']))
     for row in table['rows']:
@@ -163,10 +173,14 @@ def concat(table1, table2):
     Склеивает две таблицы по строкам, если у них совпадают заголовки.
     
     Args:
-
+        table1 (dict): Таблица с ключами №1.
+        table2 (dict): Таблица с ключами №2.
 
     Returns:
-        
+        table (dict): Объединенная таблица с ключами.
+
+    Raises:
+        ValueError: Таблицы имеют разные заголовки и не могут быть объединены.
     """
     if table1['header'] != table2['header']:
         raise ValueError("Таблицы имеют разные заголовки и не могут быть объединены.")
@@ -182,10 +196,15 @@ def split(table, row_number):
     Разбивает таблицу на две по номеру строки.
     
     Args:
-
+        table (dict): Таблица с ключами.
+        row_number (int): Номер строки, по которой будет разделяться таблица.
 
     Returns:
-        
+        table1 (dict): Таблица с ключами №1.
+        table2 (dict): Таблица с ключами №2.
+
+    Raises:
+        IndexError: Номер строки выходит за пределы таблицы.
     """
     if row_number < 0 or row_number > len(table['rows']):
         raise IndexError("Номер строки выходит за пределы таблицы.")
@@ -210,6 +229,10 @@ def auto_detect_column_types(table):
 
     Returns:
         dict: Словарь с определенными типами для каждого столбца.
+
+    Raises:
+        ValueError: pass если не получилось преобразовать в нужный тип - пропускаем.
+        AttributeError: pass если value не является строкой.
     """
     column_types = {}
 
@@ -249,10 +272,10 @@ def is_float(value):
     Вспомогательная функция для проверки, является ли строка числом с плавающей точкой.
 
     Args:
-        
+        value (int or str)
 
     Returns:
-        
+        bool 
     """
     try:
         float(value)
